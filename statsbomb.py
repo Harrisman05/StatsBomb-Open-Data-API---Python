@@ -23,7 +23,7 @@ for competition_object in competitions:
 
 random_season_id = random.choice(season_id)
 print(random_season_id)
-random_season_id = 2 # Juventus vs Real Madrid 2017
+random_season_id = 37 #      id 2 = Juventus vs Real Madrid 2017
 
 # Using champions_league_id and random_season_id, generate a match id
 
@@ -38,7 +38,7 @@ match_date = match_object[0]['match_date']
 home_team = match_object[0]['home_team']['home_team_name']
 away_team = match_object[0]['away_team']['away_team_name']
 
-# print(match_id)
+print(match_id)
 print(match_date)
 print(home_team)
 print(away_team)
@@ -80,7 +80,9 @@ for data in both_lineups:
 
 for event in event_object:
 
-    if event['type']['name'] == 'Shot' and event['shot']['outcome']['name'] == "Goal":
+    # Period 5 is extra time penalties. Needs to be excluded from goal count
+
+    if event['type']['name'] == 'Shot' and event['shot']['outcome']['name'] == "Goal" and event["period"] != 5:
 
         # print(event['id'])
 
