@@ -2,6 +2,7 @@ import pandas as pd
 from pandas import json_normalize
 import requests
 import random
+from tabulate import tabulate
 
 # "name" : "Goal"
 
@@ -22,14 +23,15 @@ for competition_object in competitions:
 ## Generate a random season id from the season id list
 
 random_season_id = random.choice(season_id)
-print(random_season_id)
-random_season_id = 37 #      id 2 = Juventus vs Real Madrid 2017
+# print(random_season_id)
+# random_season_id = 37 # Milan vs Liverpool 2005      id 2 = Juventus vs Real Madrid 2017
 
 # Using champions_league_id and random_season_id, generate a match id
 
 match_object = requests.get(f'https://raw.githubusercontent.com/statsbomb/open-data/master/data/matches/{str(champions_league_id)}/{str(random_season_id)}.json')
 match_object = match_object.json()
-# print(match_object)
+
+
 
 # Extract Match ID from the generated match object
 
@@ -37,11 +39,9 @@ match_id = match_object[0]['match_id']
 match_date = match_object[0]['match_date']
 home_team = match_object[0]['home_team']['home_team_name']
 away_team = match_object[0]['away_team']['away_team_name']
+home_score = match_object[0]['home_score']
+away_score = match_object[0]['away_score']
 
-print(match_id)
-print(match_date)
-print(home_team)
-print(away_team)
 
 # Using match_id to generate event information
 
@@ -56,15 +56,18 @@ away_team_tactical_data = event_object[1]
 home_team_formation = home_team_tactical_data['tactics']['formation']
 away_team_formation = away_team_tactical_data['tactics']['formation']
 
-print(home_team_formation)
-print(away_team_formation)
+# print(home_team_formation)
+# print(away_team_formation)
 
-home_team_lineup = home_team_tactical_data['tactics']['lineup']
-away_team_lineup = away_team_tactical_data['tactics']['lineup']
+home_team_lineup_object = home_team_tactical_data['tactics']['lineup']
+away_team_lineup_object = away_team_tactical_data['tactics']['lineup']
 
-both_lineups = [home_team_lineup, away_team_lineup]
+both_lineups_object = [home_team_lineup_object, away_team_lineup_object]
 
-for data in both_lineups:
+home_team_lineup = [[' '], [home_team + ' --- ' + str(home_team_formation)], [' ']] # nested list so that tabulate works
+away_team_lineup = [[' '], [away_team + ' --- ' + str(away_team_formation)], [' ']]
+ 
+for data in both_lineups_object:
 
     for player_info in data:
 
@@ -72,11 +75,35 @@ for data in both_lineups:
         player_number = player_info['jersey_number']
         player_position = player_info['position']['name']
 
-        print(f'{player_number} {player_name} - {player_position}')
+        player_position_initials = ""
 
-    print(' ')
+        player_position_2 = player_position.split(" ")
+
+        for word in player_position_2:
+
+            if word == "Goalkeeper":
+                player_position_initials += 'GK'
+            else:
+                player_position_initials += word[0]
+
+        tabulated_lineup = [str(player_number) + ' ' + player_name, player_position_initials]
+
+        if len(home_team_lineup) != 14: # if home team lineup list is 11 (all players accounted for), then start appending to away_team_lineup
+            home_team_lineup.append(tabulated_lineup)
+        else:
+            away_team_lineup.append(tabulated_lineup)
+
+
+both_lineups = home_team_lineup + away_team_lineup
+
     
+# print(home_team_lineup)
+# print(away_team_lineup)
+
 # Goal Events
+
+goal_events_str = ''
+
 
 for event in event_object:
 
@@ -88,6 +115,24 @@ for event in event_object:
 
         timestamp = str(event["minute"]) + ':' + str(event["second"])
         goalscorer = event["player"]["name"]
-        
-        print(f'{goalscorer} - {timestamp}')
+
+        goal_event = goalscorer + ' - ' + timestamp
+        goal_events_str += goal_event+'\n'
+
+
+print(f'''
+
+Champions League Final - {home_team} vs {away_team} - {match_date}
+
+Final Score: {home_score}-{away_score}
+
+{tabulate(both_lineups)}
+
+Goalscorers
+
+{goal_events_str}
+
+''')
+
+
 
