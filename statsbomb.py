@@ -4,8 +4,6 @@ import requests
 import random
 from tabulate import tabulate
 
-# "name" : "Goal"
-
 competitions = requests.get("https://raw.githubusercontent.com/statsbomb/open-data/master/data/competitions.json")
 competitions = competitions.json()
 
