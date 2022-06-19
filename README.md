@@ -1,8 +1,8 @@
 # StatsBomb-Open-Data-API---Python
 
-## View Champions League Final lineups + goalscorers in output console
+## View Champions League Final lineups + goalscorers in the terminal
 
-An API built using Python's requests library to pull raw data from StatsBomb free data resources (https://github.com/statsbomb/open-data) and generate football formations and results in the output console. The raw JSON data is manipulated in Python in order to present a readable format in the output console
+An API built using Python's requests library to pull raw data from StatsBomb free data resources (https://github.com/statsbomb/open-data) and generate football formations and results in the terminal. The raw JSON data is manipulated in Python in order to be presented in a readable format in the terminal.
 
 ## How to install and run project
 
